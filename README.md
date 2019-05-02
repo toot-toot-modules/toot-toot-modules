@@ -1,3 +1,8 @@
+# Module ideas
+
+Please see the wiki page for current [module ideas](https://github.com/toot-toot-modules/toot-toot-modules/wiki/Module-Ideas).
+Authors have already chosen module ideas to begin working on
+and additional ideas are stored here.
 
 # VCV Template plugin
 
