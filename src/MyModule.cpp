@@ -1,4 +1,4 @@
-#include "Template.hpp"
+#include "toot-toot-modules.hpp"
 
 
 struct MyModule : Module {
@@ -84,4 +84,4 @@ struct MyModuleWidget : ModuleWidget {
 // author name for categorization per plugin, module slug (should never
 // change), human-readable module name, and any number of tags
 // (found in `include/tags.hpp`) separated by commas.
-Model *modelMyModule = Model::create<MyModule, MyModuleWidget>("Template", "MyModule", "My Module", OSCILLATOR_TAG);
+Model *modelMyModule = Model::create<MyModule, MyModuleWidget>("toot-toot-modules", "TestModule", "Test Module", OSCILLATOR_TAG);

@@ -1,4 +1,4 @@
-#include "Template.hpp"
+#include "toot-toot-modules.hpp"
 
 
 Plugin *plugin;
