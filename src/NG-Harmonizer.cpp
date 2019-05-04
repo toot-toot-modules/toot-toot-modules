@@ -1,6 +1,7 @@
 #include "toot-toot-modules.hpp"
 #include "dsp/digital.hpp"
 #include "dsp/ringbuffer.hpp"
+#include "dsp/fft.hpp"
 
 struct NGHarmonizer : Module {
 	enum ParamIds {
@@ -30,9 +31,21 @@ struct NGHarmonizer : Module {
 
 	int delay_lim = 100;
 	int delay_counter = 0;
-	RingBuffer<float, 500> upper_ring;
-	RingBuffer<float, 500> lower_ring;
-	SchmittTrigger trigger;
+
+	const int ring_size = 2048;
+
+	RingBuffer<float, 2048> upper_ring;
+	RingBuffer<float, 2048> lower_ring;
+	float upper_sum = 0.0f;
+
+	unsigned int curr = 0;
+	unsigned int prev = 0;
+
+	float freq = 0.0f;
+	
+	float phase = 0.0f;
+
+	SchmittTrigger input_trigger;
 
 	NGHarmonizer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
@@ -50,19 +63,40 @@ void NGHarmonizer::step() {
 		pitch = inputs[PITCH_INPUT].value;
 	}
 	float input_wave = inputs[WAVE_INPUT].value;
-	float freq = FREQ_C4 * pow(2, input_wave);
+	//float freq; // = FREQ_C4 * pow(2, input_wave);
 	
 	//printf("Freq: %f\n", freq);
 
 
-	float freq_low = freq - (pitch * 100);
-	float freq_high = freq + (pitch * 100); 
+	float freq_low = freq - (pitch * 440);
+	float freq_high = freq + (pitch * 440); 
 
 	float output_low = clamp(log2f(freq_low / FREQ_C4), lower, upper);
 	float output_high = clamp(log2f(freq_high / FREQ_C4), lower, upper);
 
-	outputs[OUTPUT_LOW].value = output_low;
-	
+	curr++;
+	if (input_trigger.process(rescale(input_wave, 0.1f, 1.7f, 0.0f, 1.0f))) {
+		if (prev == 0) {
+			freq = 0;
+		}
+		else {
+			freq = floor(engineGetSampleRate() / (float)(curr - prev));
+			printf("%f\n", freq);
+		}
+		prev = curr;
+	}
+
+	phase += (freq + 100) * engineGetSampleRate();
+	if (phase >= 1.0f)
+		phase -= 1.0f;
+
+	float low_sine = sinf(2.0f * M_PI * phase);
+	outputs[OUTPUT_LOW].value = 5.0f * low_sine;
+
+
+
+
+
 	outputs[OUTPUT_THRU].value = input_wave;
 	outputs[OUTPUT_HIGH].value = output_high;
 }
