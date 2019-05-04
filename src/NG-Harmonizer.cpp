@@ -27,23 +27,13 @@ struct NGHarmonizer : Module {
 	float upper = 10.0f;
 	float lower = -10.0f;
 	
-	float FREQ_C4 = 261.6256f;
 
-	int delay_lim = 100;
-	int delay_counter = 0;
+	unsigned int currStep = 0;
+	unsigned int prevStep = 0;
 
-	const int ring_size = 2048;
-
-	RingBuffer<float, 2048> upper_ring;
-	RingBuffer<float, 2048> lower_ring;
-	float upper_sum = 0.0f;
-
-	unsigned int curr = 0;
-	unsigned int prev = 0;
-
-	float freq = 0.0f;
-	
-	float phase = 0.0f;
+	float inFreq = 0.0f;
+	float high_phase = 0.0f;
+	float low_phase = 0.0f;
 
 	SchmittTrigger input_trigger;
 
@@ -58,47 +48,47 @@ struct NGHarmonizer : Module {
 
 
 void NGHarmonizer::step() {
+	float deltat = engineGetSampleTime();
+	float in_v = inputs[WAVE_INPUT].value;
 	float pitch = params[PITCH_PARAM].value;
 	if (inputs[PITCH_INPUT].active == true) {
 		pitch = inputs[PITCH_INPUT].value;
 	}
-	float input_wave = inputs[WAVE_INPUT].value;
-	//float freq; // = FREQ_C4 * pow(2, input_wave);
-	
-	//printf("Freq: %f\n", freq);
 
 
-	float freq_low = freq - (pitch * 440);
-	float freq_high = freq + (pitch * 440); 
-
-	float output_low = clamp(log2f(freq_low / FREQ_C4), lower, upper);
-	float output_high = clamp(log2f(freq_high / FREQ_C4), lower, upper);
-
-	curr++;
-	if (input_trigger.process(rescale(input_wave, 0.1f, 1.7f, 0.0f, 1.0f))) {
-		if (prev == 0) {
-			freq = 0;
+	currStep++;
+	if (input_trigger.process(rescale(in_v, 0.1f, 1.7f, 0.0f, 1.0f))) {
+		if (prevStep == 0) {
+			inFreq = 0;
 		}
 		else {
-			freq = floor(engineGetSampleRate() / (float)(curr - prev));
-			printf("%f\n", freq);
+			inFreq = floor(engineGetSampleRate() / (float)(currStep - prevStep));
+			//printf("%f\n", inFreq);
 		}
-		prev = curr;
+		prevStep = currStep;
 	}
 
-	phase += (freq + 100) * engineGetSampleRate();
-	if (phase >= 1.0f)
-		phase -= 1.0f;
 
-	float low_sine = sinf(2.0f * M_PI * phase);
+
+	low_phase += (inFreq * 0.749159091f) * deltat;
+	if (low_phase >= 1.0f)
+		low_phase -= 1.0f;
+
+	float low_sine = sinf(2.0f * M_PI * low_phase);
 	outputs[OUTPUT_LOW].value = 5.0f * low_sine;
 
+	high_phase += (inFreq * 1.334840909f) * deltat;
+	if (high_phase >= 1.0f)
+		high_phase -= 1.0f;
+	
+	float high_sine = sinf(2.0f * M_PI * high_phase);
+	outputs[OUTPUT_HIGH].value = 5.0f * high_sine;
 
 
 
 
-	outputs[OUTPUT_THRU].value = input_wave;
-	outputs[OUTPUT_HIGH].value = output_high;
+	outputs[OUTPUT_THRU].value = in_v;
+	//outputs[OUTPUT_HIGH].value = output_high;
 }
 
 struct NGHarmonizerWidget : ModuleWidget {
