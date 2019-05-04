@@ -5,7 +5,8 @@
 
 struct NGHarmonizer : Module {
 	enum ParamIds {
-		PITCH_PARAM,
+		LOWER_PARAM,
+		UPPER_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
@@ -91,10 +92,11 @@ struct NGHarmonizer : Module {
 void NGHarmonizer::step() {
 	float deltat = engineGetSampleTime();
 	float in_v = inputs[WAVE_INPUT].value;
-	float pitch = params[PITCH_PARAM].value;
-	if (inputs[PITCH_INPUT].active == true) {
+	int lower_param = int(params[LOWER_PARAM].value);
+	int upper_param = int(params[UPPER_PARAM].value);
+	/*if (inputs[PITCH_INPUT].active == true) {
 		pitch = inputs[PITCH_INPUT].value;
-	}
+	}*/
 
 
 	currStep++;
@@ -109,27 +111,22 @@ void NGHarmonizer::step() {
 		prevStep = currStep;
 	}
 
+	low_phase += (inFreq * RatioTable[lower_param]) * deltat;
 
-
-	low_phase += (inFreq * RatioTable[DOWN_TWO_HALF]) * deltat;
 	if (low_phase >= 1.0f)
 		low_phase -= 1.0f;
 
 	float low_sine = sinf(2.0f * M_PI * low_phase);
 	outputs[OUTPUT_LOW].value = 5.0f * low_sine;
 
-	high_phase += (inFreq * RatioTable[UP_TWO_HALF]) * deltat;
+	high_phase += (inFreq * RatioTable[upper_param]) * deltat;
 	if (high_phase >= 1.0f)
 		high_phase -= 1.0f;
 	
 	float high_sine = sinf(2.0f * M_PI * high_phase);
 	outputs[OUTPUT_HIGH].value = 5.0f * high_sine;
 
-
-
-
 	outputs[OUTPUT_THRU].value = in_v;
-	//outputs[OUTPUT_HIGH].value = output_high;
 }
 
 struct NGHarmonizerWidget : ModuleWidget {
@@ -141,7 +138,8 @@ struct NGHarmonizerWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(28, 87), module, NGHarmonizer::PITCH_PARAM, -10.0, 10.0, 0.0));
+		addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(8, 87), module, NGHarmonizer::LOWER_PARAM, NGHarmonizer::NUM_STEP_RATIOS / 2, NGHarmonizer::NUM_STEP_RATIOS - 1, NGHarmonizer::NUM_STEP_RATIOS / 2));
+		addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(48, 87), module, NGHarmonizer::UPPER_PARAM, 0.0f, NGHarmonizer::NUM_STEP_RATIOS / 2 - 1, 0.0f));
 		addInput(Port::create<PJ301MPort>(Vec(33, 150), Port::INPUT, module, NGHarmonizer::PITCH_INPUT));
 
 		addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, NGHarmonizer::WAVE_INPUT));
