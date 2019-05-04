@@ -37,6 +37,47 @@ struct NGHarmonizer : Module {
 
 	SchmittTrigger input_trigger;
 
+	enum StepRatios {
+		UP_HALF,
+		UP_ONE, UP_ONE_HALF,
+		UP_TWO, UP_TWO_HALF,
+		UP_THREE, UP_THREE_HALF,
+		UP_FOUR, UP_FOUR_HALF,
+		UP_FIVE, UP_FIVE_HALF,
+		DOWN_HALF,
+		DOWN_ONE, DOWN_ONE_HALF,
+		DOWN_TWO, DOWN_TWO_HALF,
+		DOWN_THREE, DOWN_THREE_HALF,
+		DOWN_FOUR, DOWN_FOUR_HALF,
+		DOWN_FIVE, DOWN_FIVE_HALF,
+		NUM_STEP_RATIOS
+	};
+
+	float RatioTable[NUM_STEP_RATIOS] = { // from A as a baseline
+		1.059454545f, // up half (A#)
+		1.122454545f, // up one (B)
+		1.189204545f, // up one half (C)
+		1.259931818f, // up two (C#)
+		1.334840909f, // up two half (D)
+		1.414204545f, // up three (D#)
+		1.498295455f, // up three half (E)
+		1.587409091f, // up four (F)
+		1.681795455f, // up four half (F#)
+		1.781795455f, // up five (G)
+		1.88775f,     // up five half (G#)
+		0.943863636f, // down half (G#)
+		0.890909091f, // down one (G)
+		0.840886364f, // down one half (F#)
+		0.793704545f, // down two (F)
+		0.749159091f, // down two half (E)
+		0.707113636f, // down three (D#)
+		0.667409091f, // down three half (D)
+		0.629954545f, // down four (C#)
+		0.594613636f, // down four half (C)
+		0.561227273f, // down five (B)
+		0.529727273f // down five half (A#)
+	};
+
 	NGHarmonizer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
 
@@ -70,14 +111,14 @@ void NGHarmonizer::step() {
 
 
 
-	low_phase += (inFreq * 0.749159091f) * deltat;
+	low_phase += (inFreq * RatioTable[DOWN_TWO_HALF]) * deltat;
 	if (low_phase >= 1.0f)
 		low_phase -= 1.0f;
 
 	float low_sine = sinf(2.0f * M_PI * low_phase);
 	outputs[OUTPUT_LOW].value = 5.0f * low_sine;
 
-	high_phase += (inFreq * 1.334840909f) * deltat;
+	high_phase += (inFreq * RatioTable[UP_TWO_HALF]) * deltat;
 	if (high_phase >= 1.0f)
 		high_phase -= 1.0f;
 	
