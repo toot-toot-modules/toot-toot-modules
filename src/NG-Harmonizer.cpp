@@ -11,7 +11,8 @@ struct NGHarmonizer : Module {
 	};
 	enum InputIds {
 		WAVE_INPUT,
-		PITCH_INPUT,
+		LOWER_PARAM_INPUT,
+		UPPER_PARAM_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
@@ -94,12 +95,24 @@ void NGHarmonizer::step() {
 	float in_v = inputs[WAVE_INPUT].value;
 	int lower_param = int(params[LOWER_PARAM].value);
 	int upper_param = int(params[UPPER_PARAM].value);
-	/*if (inputs[PITCH_INPUT].active == true) {
-		pitch = inputs[PITCH_INPUT].value;
-	}*/
+
+	if (inputs[LOWER_PARAM_INPUT].active) {
+		lower_param = int((inputs[LOWER_PARAM_INPUT].value + 5) * 2);
+	}
+	if (inputs[UPPER_PARAM_INPUT].active) {
+		upper_param = int((inputs[UPPER_PARAM_INPUT].value + 5) * 2);
+	}
 
 
-	currStep++;
+	// We only want to step if it's active
+	if (inputs[WAVE_INPUT].active) {
+		currStep++;
+	}
+	else { // If it's not active, reset
+		currStep = 0;
+		prevStep = 0;
+	}
+
 	if (input_trigger.process(rescale(in_v, 0.1f, 1.7f, 0.0f, 1.0f))) {
 		if (prevStep == 0) {
 			inFreq = 0;
@@ -140,7 +153,8 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(8, 87), module, NGHarmonizer::LOWER_PARAM, NGHarmonizer::NUM_STEP_RATIOS / 2, NGHarmonizer::NUM_STEP_RATIOS - 1, NGHarmonizer::NUM_STEP_RATIOS / 2));
 		addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(48, 87), module, NGHarmonizer::UPPER_PARAM, 0.0f, NGHarmonizer::NUM_STEP_RATIOS / 2 - 1, 0.0f));
-		addInput(Port::create<PJ301MPort>(Vec(33, 150), Port::INPUT, module, NGHarmonizer::PITCH_INPUT));
+		addInput(Port::create<PJ301MPort>(Vec(10, 150), Port::INPUT, module, NGHarmonizer::LOWER_PARAM_INPUT));
+		addInput(Port::create<PJ301MPort>(Vec(56, 150), Port::INPUT, module, NGHarmonizer::UPPER_PARAM_INPUT));
 
 		addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, NGHarmonizer::WAVE_INPUT));
 
