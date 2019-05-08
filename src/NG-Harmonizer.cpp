@@ -3,23 +3,23 @@
 #include "dsp/ringbuffer.hpp"
 #include "dsp/fft.hpp"
 
+#define NUM_HARMONIES 4
+
+
 struct NGHarmonizer : Module {
 	enum ParamIds {
-		LOWER_PARAM,
-		UPPER_PARAM,
-		NUM_PARAMS
+		HARMONY_PARAM,
+		NUM_PARAMS = HARMONY_PARAM + NUM_HARMONIES
 	};
 	enum InputIds {
 		WAVE_INPUT,
-		LOWER_PARAM_INPUT,
-		UPPER_PARAM_INPUT,
-		NUM_INPUTS
+		HARMONY_INPUT,
+		NUM_INPUTS = HARMONY_INPUT + NUM_HARMONIES
 	};
 	enum OutputIds {
-		OUTPUT_LOW,
-		OUTPUT_THRU,
-		OUTPUT_HIGH,
-		NUM_OUTPUTS
+		THRU_OUTPUT,
+		HARMONY_OUTPUT,
+		NUM_OUTPUTS = HARMONY_OUTPUT + NUM_HARMONIES
 	};
 	enum LightIds {
 		BLINK_LIGHT,
@@ -34,28 +34,40 @@ struct NGHarmonizer : Module {
 	unsigned int prevStep = 0;
 
 	float inFreq = 0.0f;
-	float high_phase = 0.0f;
-	float low_phase = 0.0f;
+	float phases[NUM_HARMONIES];
 
 	SchmittTrigger input_trigger;
 
 	enum StepRatios {
+		DOWN_FIVE_HALF, DOWN_FIVE,
+		DOWN_FOUR_HALF, DOWN_FOUR,
+		DOWN_THREE_HALF, DOWN_THREE,
+		DOWN_TWO_HALF, DOWN_TWO,
+		DOWN_ONE_HALF, DOWN_ONE,
+		DOWN_HALF,
+		ONE,
 		UP_HALF,
 		UP_ONE, UP_ONE_HALF,
 		UP_TWO, UP_TWO_HALF,
 		UP_THREE, UP_THREE_HALF,
 		UP_FOUR, UP_FOUR_HALF,
 		UP_FIVE, UP_FIVE_HALF,
-		DOWN_HALF,
-		DOWN_ONE, DOWN_ONE_HALF,
-		DOWN_TWO, DOWN_TWO_HALF,
-		DOWN_THREE, DOWN_THREE_HALF,
-		DOWN_FOUR, DOWN_FOUR_HALF,
-		DOWN_FIVE, DOWN_FIVE_HALF,
 		NUM_STEP_RATIOS
 	};
 
 	float RatioTable[NUM_STEP_RATIOS] = { // from A as a baseline
+		0.529727273f, // down five half (A#)
+		0.561227273f, // down five (B)
+		0.594613636f, // down four half (C)
+		0.629954545f, // down four (C#)
+		0.667409091f, // down three half (D)
+		0.707113636f, // down three (D#)
+		0.749159091f, // down two half (E)
+		0.793704545f, // down two (F)
+		0.840886364f, // down one half (F#)
+		0.890909091f, // down one (G)
+		0.943863636f, // down half (G#)
+		1.0f,		  // one (A)
 		1.059454545f, // up half (A#)
 		1.122454545f, // up one (B)
 		1.189204545f, // up one half (C)
@@ -66,21 +78,14 @@ struct NGHarmonizer : Module {
 		1.587409091f, // up four (F)
 		1.681795455f, // up four half (F#)
 		1.781795455f, // up five (G)
-		1.88775f,     // up five half (G#)
-		0.943863636f, // down half (G#)
-		0.890909091f, // down one (G)
-		0.840886364f, // down one half (F#)
-		0.793704545f, // down two (F)
-		0.749159091f, // down two half (E)
-		0.707113636f, // down three (D#)
-		0.667409091f, // down three half (D)
-		0.629954545f, // down four (C#)
-		0.594613636f, // down four half (C)
-		0.561227273f, // down five (B)
-		0.529727273f // down five half (A#)
+		1.88775f     // up five half (G#)
 	};
 
-	NGHarmonizer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+	NGHarmonizer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
+		for (int i = 0; i < NUM_HARMONIES; i++) {
+			phases[i] = 0.0f;
+		}
+	}
 	void step() override;
 
 	// For more advanced Module features, read Rack's engine.hpp header file
@@ -93,16 +98,14 @@ struct NGHarmonizer : Module {
 void NGHarmonizer::step() {
 	float deltat = engineGetSampleTime();
 	float in_v = inputs[WAVE_INPUT].value;
-	int lower_param = int(params[LOWER_PARAM].value);
-	int upper_param = int(params[UPPER_PARAM].value);
+	int harmony_params[NUM_HARMONIES];
 
-	if (inputs[LOWER_PARAM_INPUT].active) {
-		lower_param = int((inputs[LOWER_PARAM_INPUT].value + 5) * 2);
+	for (int i = 0; i < NUM_HARMONIES; ++i) {
+		harmony_params[i] = params[HARMONY_PARAM + i].value;
+		if (inputs[HARMONY_INPUT + i].active) {
+			harmony_params[i] = abs(int((inputs[HARMONY_INPUT + i].value) * 2.2));
+		}
 	}
-	if (inputs[UPPER_PARAM_INPUT].active) {
-		upper_param = int((inputs[UPPER_PARAM_INPUT].value + 5) * 2);
-	}
-
 
 	// We only want to step if it's active
 	if (inputs[WAVE_INPUT].active) {
@@ -124,22 +127,16 @@ void NGHarmonizer::step() {
 		prevStep = currStep;
 	}
 
-	low_phase += (inFreq * RatioTable[lower_param]) * deltat;
 
-	if (low_phase >= 1.0f)
-		low_phase -= 1.0f;
+	for (int i = 0; i < NUM_HARMONIES; i++) {
+		phases[i] += (inFreq * RatioTable[harmony_params[i]]) * deltat;
+		if (phases[i] >= 1.0f)
+			phases[i] -= 1.0f;
+		float sine = sinf(2.0f * M_PI * phases[i]);
+		outputs[HARMONY_OUTPUT + i].value = 5.0f * sine;
+	}
 
-	float low_sine = sinf(2.0f * M_PI * low_phase);
-	outputs[OUTPUT_LOW].value = 5.0f * low_sine;
-
-	high_phase += (inFreq * RatioTable[upper_param]) * deltat;
-	if (high_phase >= 1.0f)
-		high_phase -= 1.0f;
-	
-	float high_sine = sinf(2.0f * M_PI * high_phase);
-	outputs[OUTPUT_HIGH].value = 5.0f * high_sine;
-
-	outputs[OUTPUT_THRU].value = in_v;
+	outputs[THRU_OUTPUT].value = in_v;
 }
 
 struct NGHarmonizerWidget : ModuleWidget {
@@ -151,16 +148,15 @@ struct NGHarmonizerWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(8, 87), module, NGHarmonizer::LOWER_PARAM, NGHarmonizer::NUM_STEP_RATIOS / 2, NGHarmonizer::NUM_STEP_RATIOS - 1, NGHarmonizer::NUM_STEP_RATIOS / 2));
-		addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(48, 87), module, NGHarmonizer::UPPER_PARAM, 0.0f, NGHarmonizer::NUM_STEP_RATIOS / 2 - 1, 0.0f));
-		addInput(Port::create<PJ301MPort>(Vec(10, 150), Port::INPUT, module, NGHarmonizer::LOWER_PARAM_INPUT));
-		addInput(Port::create<PJ301MPort>(Vec(56, 150), Port::INPUT, module, NGHarmonizer::UPPER_PARAM_INPUT));
+		for (int i = 0, j = 8; i < NUM_HARMONIES; i++, j += 35) {
+			addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(j, 87), module, NGHarmonizer::HARMONY_PARAM + i, 0.0f, NGHarmonizer::NUM_STEP_RATIOS - 1, NGHarmonizer::NUM_STEP_RATIOS / 2));
+			addInput(Port::create<PJ301MPort>(Vec(j + 2, 150), Port::INPUT, module, NGHarmonizer::HARMONY_INPUT + i));
+			addOutput(Port::create<PJ301MPort>(Vec(j + 2, 255), Port::OUTPUT, module, NGHarmonizer::HARMONY_OUTPUT + i));
+		}
 
 		addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, NGHarmonizer::WAVE_INPUT));
 
-		addOutput(Port::create<PJ301MPort>(Vec(5, 255), Port::OUTPUT, module, NGHarmonizer::OUTPUT_LOW));
-		addOutput(Port::create<PJ301MPort>(Vec(33, 255), Port::OUTPUT, module, NGHarmonizer::OUTPUT_THRU));
-		addOutput(Port::create<PJ301MPort>(Vec(61, 255), Port::OUTPUT, module, NGHarmonizer::OUTPUT_HIGH));
+		addOutput(Port::create<PJ301MPort>(Vec(33, 310), Port::OUTPUT, module, NGHarmonizer::THRU_OUTPUT));
 
 		addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, NGHarmonizer::BLINK_LIGHT));
 	}
