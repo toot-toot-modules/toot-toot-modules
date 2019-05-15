@@ -18,6 +18,7 @@ struct NGHarmonizer : Module {
 	};
 	enum OutputIds {
 		THRU_OUTPUT,
+		TOTAL_OUTPUT,
 		HARMONY_OUTPUT,
 		NUM_OUTPUTS = HARMONY_OUTPUT + NUM_HARMONIES
 	};
@@ -98,6 +99,7 @@ struct NGHarmonizer : Module {
 void NGHarmonizer::step() {
 	float deltat = engineGetSampleTime();
 	float in_v = inputs[WAVE_INPUT].value;
+	float total_out = 0.0f;
 	int harmony_params[NUM_HARMONIES];
 
 	for (int i = 0; i < NUM_HARMONIES; ++i) {
@@ -117,7 +119,7 @@ void NGHarmonizer::step() {
 	}
 
 	if (input_trigger.process(rescale(in_v, 0.1f, 1.7f, 0.0f, 1.0f))) {
-		if (prevStep == 0) {
+		if (prevStep == 0) { 
 			inFreq = 0;
 		}
 		else {
@@ -133,9 +135,12 @@ void NGHarmonizer::step() {
 		if (phases[i] >= 1.0f)
 			phases[i] -= 1.0f;
 		float sine = sinf(2.0f * M_PI * phases[i]);
+		total_out += (5.0f / NUM_HARMONIES) * sine;
 		outputs[HARMONY_OUTPUT + i].value = 5.0f * sine;
 	}
+	printf("Cumulative: %f\n", total_out);
 
+	outputs[TOTAL_OUTPUT].value = total_out;
 	outputs[THRU_OUTPUT].value = in_v;
 }
 
@@ -156,7 +161,8 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, NGHarmonizer::WAVE_INPUT));
 
-		addOutput(Port::create<PJ301MPort>(Vec(33, 310), Port::OUTPUT, module, NGHarmonizer::THRU_OUTPUT));
+		addOutput(Port::create<PJ301MPort>(Vec(10, 310), Port::OUTPUT, module, NGHarmonizer::THRU_OUTPUT));
+		addOutput(Port::create<PJ301MPort>(Vec(56, 310), Port::OUTPUT, module, NGHarmonizer::TOTAL_OUTPUT));
 
 		addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, NGHarmonizer::BLINK_LIGHT));
 	}
