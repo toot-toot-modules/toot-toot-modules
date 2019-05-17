@@ -4,7 +4,15 @@
 #include "dsp/fft.hpp"
 
 #define NUM_HARMONIES 4
-
+#define HARMONY_KNOB_Y 150
+#define HARMONY_IN_Y HARMONY_KNOB_Y + 50
+#define HARMONY_OUT_Y HARMONY_IN_Y + 60
+#define WAVE_IN_X 63
+#define WAVE_IN_Y 47
+#define THRU_X 40
+#define THRU_Y 310
+#define TOTAL_X THRU_X + 46
+#define TOTAL_Y THRU_Y
 
 struct NGHarmonizer : Module {
 	enum ParamIds {
@@ -82,6 +90,7 @@ struct NGHarmonizer : Module {
 		1.88775f     // up five half (G#)
 	};
 
+
 	NGHarmonizer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
 		for (int i = 0; i < NUM_HARMONIES; i++) {
 			phases[i] = 0.0f;
@@ -138,7 +147,6 @@ void NGHarmonizer::step() {
 		total_out += (5.0f / NUM_HARMONIES) * sine;
 		outputs[HARMONY_OUTPUT + i].value = 5.0f * sine;
 	}
-	printf("Cumulative: %f\n", total_out);
 
 	outputs[TOTAL_OUTPUT].value = total_out;
 	outputs[THRU_OUTPUT].value = in_v;
@@ -153,18 +161,62 @@ struct NGHarmonizerWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
+		Label* harmonyLabel = new Label;
+		harmonyLabel->color = nvgRGB(0, 0, 0);
+		harmonyLabel->box.pos = Vec(box.size.x / 2 - 37, HARMONY_KNOB_Y - 45);
+		harmonyLabel->text = "Harmonies";
+		addChild(harmonyLabel);
+
+		Label* cvLabel = new Label;
+		cvLabel->color = nvgRGB(0, 0, 0);
+		cvLabel->box.pos = Vec(box.size.x / 2 - 17, HARMONY_IN_Y - 20);
+		cvLabel->text = "CV";
+		addChild(cvLabel);
+
+		Label* outputLabel = new Label;
+		outputLabel->color = nvgRGB(0, 0, 0);
+		outputLabel->box.pos = Vec(box.size.x / 2 - 21, HARMONY_OUT_Y - 20);
+		outputLabel->text = "OUT";
+		addChild(outputLabel);
+
 		for (int i = 0, j = 8; i < NUM_HARMONIES; i++, j += 35) {
-			addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(j, 87), module, NGHarmonizer::HARMONY_PARAM + i, 0.0f, NGHarmonizer::NUM_STEP_RATIOS - 1, NGHarmonizer::NUM_STEP_RATIOS / 2));
-			addInput(Port::create<PJ301MPort>(Vec(j + 2, 150), Port::INPUT, module, NGHarmonizer::HARMONY_INPUT + i));
-			addOutput(Port::create<PJ301MPort>(Vec(j + 2, 255), Port::OUTPUT, module, NGHarmonizer::HARMONY_OUTPUT + i));
+			Label* harmonyNumber = new Label;
+			harmonyNumber->color = nvgRGB(0, 0, 0);
+			harmonyNumber->box.pos = Vec(j + 2.5, HARMONY_KNOB_Y - 20);
+			harmonyNumber->text = std::to_string(i + 1);
+			addChild(harmonyNumber);
+
+			addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(j, HARMONY_KNOB_Y), module, NGHarmonizer::HARMONY_PARAM + i, 0.0f, NGHarmonizer::NUM_STEP_RATIOS - 1, NGHarmonizer::NUM_STEP_RATIOS / 2));
+			addInput(Port::create<PJ301MPort>(Vec(j + 2, HARMONY_IN_Y), Port::INPUT, module, NGHarmonizer::HARMONY_INPUT + i));
+			addOutput(Port::create<PJ301MPort>(Vec(j + 2, HARMONY_OUT_Y), Port::OUTPUT, module, NGHarmonizer::HARMONY_OUTPUT + i));
 		}
 
-		addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, NGHarmonizer::WAVE_INPUT));
+		addInput(Port::create<PJ301MPort>(Vec(WAVE_IN_X, WAVE_IN_Y), Port::INPUT, module, NGHarmonizer::WAVE_INPUT));
 
-		addOutput(Port::create<PJ301MPort>(Vec(10, 310), Port::OUTPUT, module, NGHarmonizer::THRU_OUTPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(56, 310), Port::OUTPUT, module, NGHarmonizer::TOTAL_OUTPUT));
+		Label* waveLabel = new Label;
+		waveLabel->color = nvgRGB(0, 0, 0);
+		waveLabel->box.pos = Vec(WAVE_IN_X - 12, WAVE_IN_Y + 25);
+		waveLabel->text = "V/OCT";
+		addChild(waveLabel);
 
-		addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, NGHarmonizer::BLINK_LIGHT));
+		addOutput(Port::create<PJ301MPort>(Vec(THRU_X, THRU_Y), Port::OUTPUT, module, NGHarmonizer::THRU_OUTPUT));
+
+		Label* thruLabel = new Label;
+		thruLabel->color = nvgRGB(0, 0, 0);
+		thruLabel->box.pos = Vec(THRU_X - 11, THRU_Y + 25);
+		thruLabel->text = "THRU";
+		addChild(thruLabel);
+
+
+		addOutput(Port::create<PJ301MPort>(Vec(TOTAL_X, TOTAL_Y), Port::OUTPUT, module, NGHarmonizer::TOTAL_OUTPUT));
+
+		Label* totalLabel = new Label;
+		totalLabel->color = nvgRGB(0, 0, 0);
+		totalLabel->box.pos = Vec(TOTAL_X - 13, TOTAL_Y + 25);
+		totalLabel->text = "TOTAL";
+		addChild(totalLabel);
+
+		//addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, NGHarmonizer::BLINK_LIGHT));
 	}
 };
 
