@@ -144,11 +144,11 @@ void NGHarmonizer::step() {
 		if (phases[i] >= 1.0f)
 			phases[i] -= 1.0f;
 		float sine = sinf(2.0f * M_PI * phases[i]);
-		total_out += (5.0f / NUM_HARMONIES) * sine;
+		total_out += (5.0f / (NUM_HARMONIES + 1) ) * sine;
 		outputs[HARMONY_OUTPUT + i].value = 5.0f * sine;
 	}
 
-	outputs[TOTAL_OUTPUT].value = total_out;
+	outputs[TOTAL_OUTPUT].value = total_out + (in_v / (NUM_HARMONIES + 1));
 	outputs[THRU_OUTPUT].value = in_v;
 }
 
