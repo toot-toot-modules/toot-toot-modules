@@ -1,3 +1,4 @@
+#include <random>
 #include "toot-toot-modules.hpp"
 
 
@@ -27,6 +28,9 @@ struct Rpeggi8r : Module {
 		NUM_LIGHTS
 	};
 
+	std::ranlux24 random;
+	std::uniform_int_distribution<> toneDistribution;
+
 	float phase = 0.0;
 	float blinkPhase = 0.0;
 	float arpPhase = 0.0;
@@ -36,10 +40,15 @@ struct Rpeggi8r : Module {
 	void step() override;
 
 	void linearAppegiate();
+	void randomAppegiate();
 };
 
 
-Rpeggi8r::Rpeggi8r() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
+Rpeggi8r::Rpeggi8r()
+  : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
+  , random()
+  , toneDistribution(A_PARAM, NUM_PARAMS-1)
+{
 	currentTone = A_PARAM;
 }
 
@@ -54,7 +63,7 @@ void Rpeggi8r::step() {
 	arpPhase += freq * deltaTime;
 	if (arpPhase >= 1.0f) {
 		arpPhase -= 1.0f;
-		linearAppegiate();
+		randomAppegiate();
 	}
 
 	// Get the output frequency for the current tone
@@ -79,6 +88,11 @@ void Rpeggi8r::linearAppegiate() {
 	// Reset back to first tone after moving past the last tone
 	if (currentTone == NUM_PARAMS)
 		currentTone = A_PARAM;
+}
+
+void Rpeggi8r::randomAppegiate() {
+	// Move to a random tone
+	currentTone = toneDistribution(random);
 }
 
 struct Rpeggi8rWidget : ModuleWidget {
