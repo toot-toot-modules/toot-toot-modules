@@ -4,11 +4,12 @@
 #include "dsp/fft.hpp"
 
 #define NUM_HARMONIES 4
-#define HARMONY_KNOB_Y 150
+#define HARMONY_KNOB_Y 110
 #define HARMONY_IN_Y HARMONY_KNOB_Y + 50
-#define HARMONY_OUT_Y HARMONY_IN_Y + 60
-#define WAVE_IN_X 63
-#define WAVE_IN_Y 47
+#define HARMONY_OUT_Y HARMONY_IN_Y + 50
+#define HARMONY_OUT_CV_Y HARMONY_OUT_Y + 50
+#define WAVE_IN_X 40
+#define WAVE_IN_Y 40
 #define THRU_X 40
 #define THRU_Y 310
 #define TOTAL_X THRU_X + 46
@@ -28,7 +29,8 @@ struct NGHarmonizer : Module {
 		THRU_OUTPUT,
 		TOTAL_OUTPUT,
 		HARMONY_OUTPUT,
-		NUM_OUTPUTS = HARMONY_OUTPUT + NUM_HARMONIES
+		HARMONY_OUTPUT_CV = HARMONY_OUTPUT + NUM_HARMONIES,
+		NUM_OUTPUTS = HARMONY_OUTPUT_CV + NUM_HARMONIES
 	};
 	enum LightIds {
 		BLINK_LIGHT,
@@ -169,8 +171,8 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* cvLabel = new Label;
 		cvLabel->color = nvgRGB(0, 0, 0);
-		cvLabel->box.pos = Vec(box.size.x / 2 - 17, HARMONY_IN_Y - 20);
-		cvLabel->text = "CV";
+		cvLabel->box.pos = Vec(box.size.x / 2 - 26, HARMONY_IN_Y - 20);
+		cvLabel->text = "CV / IN";
 		addChild(cvLabel);
 
 		Label* outputLabel = new Label;
@@ -178,6 +180,12 @@ struct NGHarmonizerWidget : ModuleWidget {
 		outputLabel->box.pos = Vec(box.size.x / 2 - 21, HARMONY_OUT_Y - 20);
 		outputLabel->text = "OUT";
 		addChild(outputLabel);
+
+		Label* outputCVLabel = new Label;
+		outputCVLabel->color = nvgRGB(0, 0, 0);
+		outputCVLabel->box.pos = Vec(box.size.x / 2 - 34, HARMONY_OUT_CV_Y - 20);
+		outputCVLabel->text = "CV / OUT";
+		addChild(outputCVLabel);
 
 		for (int i = 0, j = 8; i < NUM_HARMONIES; i++, j += 35) {
 			Label* harmonyNumber = new Label;
@@ -189,13 +197,14 @@ struct NGHarmonizerWidget : ModuleWidget {
 			addParam(ParamWidget::create<RoundBlackSnapKnob>(Vec(j, HARMONY_KNOB_Y), module, NGHarmonizer::HARMONY_PARAM + i, 0.0f, NGHarmonizer::NUM_STEP_RATIOS - 1, NGHarmonizer::NUM_STEP_RATIOS / 2));
 			addInput(Port::create<PJ301MPort>(Vec(j + 2, HARMONY_IN_Y), Port::INPUT, module, NGHarmonizer::HARMONY_INPUT + i));
 			addOutput(Port::create<PJ301MPort>(Vec(j + 2, HARMONY_OUT_Y), Port::OUTPUT, module, NGHarmonizer::HARMONY_OUTPUT + i));
+			addOutput(Port::create<PJ301MPort>(Vec(j + 2, HARMONY_OUT_CV_Y), Port::OUTPUT, module, NGHarmonizer::HARMONY_OUTPUT_CV + i));
 		}
 
 		addInput(Port::create<PJ301MPort>(Vec(WAVE_IN_X, WAVE_IN_Y), Port::INPUT, module, NGHarmonizer::WAVE_INPUT));
 
 		Label* waveLabel = new Label;
 		waveLabel->color = nvgRGB(0, 0, 0);
-		waveLabel->box.pos = Vec(WAVE_IN_X - 12, WAVE_IN_Y + 25);
+		waveLabel->box.pos = Vec(WAVE_IN_X + 20, WAVE_IN_Y + 2);
 		waveLabel->text = "V/OCT";
 		addChild(waveLabel);
 
