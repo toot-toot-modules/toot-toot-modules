@@ -36,11 +36,13 @@ struct Rpeggi8r : Module {
 	float arpPhase = 0.0;
 	int currentTone;
 	int previousTone;
+	int previousTripleTone;
 
 	Rpeggi8r();
 	void step() override;
 
 	void linearArpeggiate();
+	void linearTriplesArpeggiate();
 	void randomArpeggiate();
 	void randomNoRepeatArpeggiate();
 };
@@ -52,6 +54,8 @@ Rpeggi8r::Rpeggi8r()
   , toneDistribution(A_PARAM, NUM_PARAMS-1)
 {
 	currentTone = A_PARAM;
+	previousTone = NUM_PARAMS-1;
+	previousTripleTone = previousTone - 1;
 }
 
 void Rpeggi8r::step() {
@@ -65,7 +69,7 @@ void Rpeggi8r::step() {
 	arpPhase += freq * deltaTime;
 	if (arpPhase >= 1.0f) {
 		arpPhase -= 1.0f;
-		randomNoRepeatArpeggiate();
+		linearTriplesArpeggiate();
 	}
 
 	// Get the output frequency for the current tone
@@ -94,7 +98,26 @@ void Rpeggi8r::linearArpeggiate() {
 }
 
 void Rpeggi8r::linearTriplesArpeggiate() {
+	if (previousTone == A_PARAM) {
+		// Move from middle triple tone to end
+		previousTone = currentTone;
+		previousTripleTone = currentTone;
+		currentTone = NUM_PARAMS-1;
+	}
+	else if (previousTone == (NUM_PARAMS-1)) {
+		// Move from starting triple tone to middle
+		previousTone = currentTone;
+		currentTone = previousTripleTone + 1;
 
+		// Reset back to first triple tone after moving past the last triple
+		if (currentTone == NUM_PARAMS-1)
+			currentTone = A_PARAM + 1;
+	}
+	else {
+		// Move from ending triple tone to start
+		previousTone = currentTone;
+		currentTone = A_PARAM;
+	}
 }
 
 void Rpeggi8r::randomArpeggiate() {
