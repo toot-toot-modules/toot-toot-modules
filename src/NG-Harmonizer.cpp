@@ -10,10 +10,12 @@
 #define HARMONY_OUT_CV_Y HARMONY_OUT_Y + 50
 #define WAVE_IN_X 40
 #define WAVE_IN_Y 40
-#define THRU_X 40
+#define THRU_X 17
 #define THRU_Y 310
 #define TOTAL_X THRU_X + 46
 #define TOTAL_Y THRU_Y
+#define TOTAL_CV_X TOTAL_X + 46
+#define TOTAL_CV_Y TOTAL_Y
 
 struct NGHarmonizer : Module {
 	enum ParamIds {
@@ -28,6 +30,7 @@ struct NGHarmonizer : Module {
 	enum OutputIds {
 		THRU_OUTPUT,
 		TOTAL_OUTPUT,
+		TOTAL_OUTPUT_CV,
 		HARMONY_OUTPUT,
 		HARMONY_OUTPUT_CV = HARMONY_OUTPUT + NUM_HARMONIES,
 		NUM_OUTPUTS = HARMONY_OUTPUT_CV + NUM_HARMONIES
@@ -111,6 +114,7 @@ void NGHarmonizer::step() {
 	float deltat = engineGetSampleTime();
 	float in_v = inputs[WAVE_INPUT].value;
 	float total_out = 0.0f;
+	float total_out_cv = 0.0f;
 	int harmony_params[NUM_HARMONIES];
 
 	for (int i = 0; i < NUM_HARMONIES; ++i) {
@@ -148,9 +152,11 @@ void NGHarmonizer::step() {
 		float sine = sinf(2.0f * M_PI * phases[i]);
 		total_out += (5.0f / (NUM_HARMONIES + 1) ) * sine;
 		outputs[HARMONY_OUTPUT + i].value = 5.0f * sine;
+		outputs[HARMONY_OUTPUT_CV + i].value = (5.0f * sine) - 5.0f;
 	}
 
 	outputs[TOTAL_OUTPUT].value = total_out + (in_v / (NUM_HARMONIES + 1));
+	outputs[TOTAL_OUTPUT_CV].value = total_out - 5.0f;
 	outputs[THRU_OUTPUT].value = in_v;
 }
 
@@ -221,10 +227,17 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* totalLabel = new Label;
 		totalLabel->color = nvgRGB(0, 0, 0);
-		totalLabel->box.pos = Vec(TOTAL_X - 13, TOTAL_Y + 25);
-		totalLabel->text = "TOTAL";
+		totalLabel->box.pos = Vec(TOTAL_X - 8, TOTAL_Y + 25);
+		totalLabel->text = "TOT";
 		addChild(totalLabel);
 
+		addOutput(Port::create<PJ301MPort>(Vec(TOTAL_CV_X, TOTAL_CV_Y), Port::OUTPUT, module, NGHarmonizer::TOTAL_OUTPUT_CV));
+
+		Label* totalCVLabel = new Label;
+		totalCVLabel->color = nvgRGB(0, 0, 0);
+		totalCVLabel->box.pos = Vec(TOTAL_CV_X - 16, TOTAL_CV_Y + 25);
+		totalCVLabel->text = "TOT/CV";
+		addChild(totalCVLabel);
 		//addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, NGHarmonizer::BLINK_LIGHT));
 	}
 };
