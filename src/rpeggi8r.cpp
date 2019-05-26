@@ -149,15 +149,7 @@ struct Rpeggi8rWidget : ModuleWidget {
 		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 150), module, Rpeggi8r::C_PARAM, 432.0f, 864.0f, 647.27f));
 		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 150), module, Rpeggi8r::D_PARAM, 432.0f, 864.0f, 864.0f));
 
-		//addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, Rpeggi8r::FREQ_INPUT));
-		//addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, Rpeggi8r::A_INPUT));
-		//addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, Rpeggi8r::B_INPUT));
-		//addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, Rpeggi8r::C_INPUT));
-		//addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, Rpeggi8r::D_INPUT));
-
 		addOutput(Port::create<PJ301MPort>(Vec(50, 300), Port::OUTPUT, module, Rpeggi8r::ARP_OUTPUT));
-
-		//addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, Rpeggi8r::BLINK_LIGHT));
 	}
 };
 
