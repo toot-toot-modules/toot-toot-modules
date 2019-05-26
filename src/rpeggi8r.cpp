@@ -35,12 +35,14 @@ struct Rpeggi8r : Module {
 	float blinkPhase = 0.0;
 	float arpPhase = 0.0;
 	int currentTone;
+	int previousTone;
 
 	Rpeggi8r();
 	void step() override;
 
 	void linearAppegiate();
 	void randomAppegiate();
+	void randomNoRepeatAppegiate();
 };
 
 
@@ -63,7 +65,7 @@ void Rpeggi8r::step() {
 	arpPhase += freq * deltaTime;
 	if (arpPhase >= 1.0f) {
 		arpPhase -= 1.0f;
-		randomAppegiate();
+		randomNoRepeatAppegiate();
 	}
 
 	// Get the output frequency for the current tone
@@ -83,6 +85,7 @@ void Rpeggi8r::step() {
 
 void Rpeggi8r::linearAppegiate() {
 	// Move to next tone
+	previousTone = currentTone;
 	currentTone++;
 
 	// Reset back to first tone after moving past the last tone
@@ -92,7 +95,16 @@ void Rpeggi8r::linearAppegiate() {
 
 void Rpeggi8r::randomAppegiate() {
 	// Move to a random tone
+	previousTone = currentTone;
 	currentTone = toneDistribution(random);
+}
+
+void Rpeggi8r::randomNoRepeatAppegiate() {
+	// Move to a random tone other than the current one
+	previousTone = currentTone;
+	while (previousTone == currentTone) {
+		currentTone = toneDistribution(random);
+	}
 }
 
 struct Rpeggi8rWidget : ModuleWidget {
