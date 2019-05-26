@@ -40,9 +40,9 @@ struct Rpeggi8r : Module {
 	Rpeggi8r();
 	void step() override;
 
-	void linearAppegiate();
-	void randomAppegiate();
-	void randomNoRepeatAppegiate();
+	void linearArpeggiate();
+	void randomArpeggiate();
+	void randomNoRepeatArpeggiate();
 };
 
 
@@ -65,7 +65,7 @@ void Rpeggi8r::step() {
 	arpPhase += freq * deltaTime;
 	if (arpPhase >= 1.0f) {
 		arpPhase -= 1.0f;
-		randomNoRepeatAppegiate();
+		randomNoRepeatArpeggiate();
 	}
 
 	// Get the output frequency for the current tone
@@ -83,7 +83,7 @@ void Rpeggi8r::step() {
 	outputs[ARP_OUTPUT].value = 5.0f * sine;
 }
 
-void Rpeggi8r::linearAppegiate() {
+void Rpeggi8r::linearArpeggiate() {
 	// Move to next tone
 	previousTone = currentTone;
 	currentTone++;
@@ -93,13 +93,17 @@ void Rpeggi8r::linearAppegiate() {
 		currentTone = A_PARAM;
 }
 
-void Rpeggi8r::randomAppegiate() {
+void Rpeggi8r::linearTriplesArpeggiate() {
+
+}
+
+void Rpeggi8r::randomArpeggiate() {
 	// Move to a random tone
 	previousTone = currentTone;
 	currentTone = toneDistribution(random);
 }
 
-void Rpeggi8r::randomNoRepeatAppegiate() {
+void Rpeggi8r::randomNoRepeatArpeggiate() {
 	// Move to a random tone other than the current one
 	previousTone = currentTone;
 	while (previousTone == currentTone) {
