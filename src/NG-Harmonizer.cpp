@@ -8,8 +8,8 @@
 #define HARMONY_IN_Y HARMONY_KNOB_Y + 50
 #define HARMONY_OUT_Y HARMONY_IN_Y + 50
 #define HARMONY_OUT_CV_Y HARMONY_OUT_Y + 50
-#define WAVE_IN_X 40
-#define WAVE_IN_Y 40
+#define WAVE_IN_X 65
+#define WAVE_IN_Y 58
 #define THRU_X 17
 #define THRU_Y HARMONY_OUT_CV_Y + 50
 #define TOTAL_X THRU_X + 46
@@ -175,7 +175,7 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* harmonyLabel = new Label;
 		harmonyLabel->color = nvgRGB(0, 0, 0);
-		harmonyLabel->box.pos = Vec(box.size.x / 2 - 37, HARMONY_KNOB_Y - 45);
+		harmonyLabel->box.pos = Vec(box.size.x / 2 - 37, HARMONY_KNOB_Y - 38);
 		harmonyLabel->text = "Harmonies";
 		addChild(harmonyLabel);
 
@@ -217,7 +217,7 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* waveLabel = new Label;
 		waveLabel->color = nvgRGB(0, 0, 0);
-		waveLabel->box.pos = Vec(WAVE_IN_X + 20, WAVE_IN_Y + 2);
+		waveLabel->box.pos = Vec(WAVE_IN_X - 12, WAVE_IN_Y - 18);
 		waveLabel->text = "V/OCT";
 		waveLabel->fontSize = IN_FONT_SIZE;
 		addChild(waveLabel);
