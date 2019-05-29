@@ -11,7 +11,7 @@
 #define WAVE_IN_X 40
 #define WAVE_IN_Y 40
 #define THRU_X 17
-#define THRU_Y 310
+#define THRU_Y HARMONY_OUT_CV_Y + 50
 #define TOTAL_X THRU_X + 46
 #define TOTAL_Y THRU_Y
 #define TOTAL_CV_X TOTAL_X + 46
@@ -226,7 +226,7 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* thruLabel = new Label;
 		thruLabel->color = nvgRGB(255, 255, 255);
-		thruLabel->box.pos = Vec(THRU_X - 9, THRU_Y + 25);
+		thruLabel->box.pos = Vec(THRU_X - 9, THRU_Y - 18);
 		thruLabel->text = "THRU";
 		thruLabel->fontSize = OUT_FONT_SIZE;
 		addChild(thruLabel);
@@ -236,7 +236,7 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* totalLabel = new Label;
 		totalLabel->color = nvgRGB(255, 255, 255);
-		totalLabel->box.pos = Vec(TOTAL_X - 5, TOTAL_Y + 25);
+		totalLabel->box.pos = Vec(TOTAL_X - 5, TOTAL_Y - 18);
 		totalLabel->text = "TOT";
 		totalLabel->fontSize = OUT_FONT_SIZE;
 		addChild(totalLabel);
@@ -245,7 +245,7 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* totalCVLabel = new Label;
 		totalCVLabel->color = nvgRGB(255, 255, 255);
-		totalCVLabel->box.pos = Vec(TOTAL_CV_X - 13, TOTAL_CV_Y + 25);
+		totalCVLabel->box.pos = Vec(TOTAL_CV_X - 13, TOTAL_CV_Y - 18);
 		totalCVLabel->text = "TOT/CV";
 		totalCVLabel->fontSize = OUT_FONT_SIZE;
 		addChild(totalCVLabel);

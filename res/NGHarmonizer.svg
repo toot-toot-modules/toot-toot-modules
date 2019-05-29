@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="74.978285"
-     inkscape:cy="84.905169"
+     inkscape:cx="54.775235"
+     inkscape:cy="145.51432"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -40,7 +40,9 @@
      inkscape:window-height="1057"
      inkscape:window-x="0"
      inkscape:window-y="34"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:measure-start="127.027,148.745"
+     inkscape:measure-end="127.279,58.8414" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -201,13 +203,13 @@
          inkscape:connector-curvature="0" />
     </g>
     <rect
-       style="fill:#333333;stroke-width:0.37867755"
+       style="fill:#333333;stroke-width:0.34133336"
        id="rect38"
        width="35.212761"
-       height="13.898005"
+       height="11.292"
        x="2.6153471"
-       y="276.82175"
-       ry="1.4631376" />
+       y="274.82898"
+       ry="1.1887857" />
     <rect
        style="fill:#333333;stroke-width:0.35037512"
        id="rect38-3"
