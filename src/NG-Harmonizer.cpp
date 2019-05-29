@@ -4,7 +4,7 @@
 #include "dsp/fft.hpp"
 
 #define NUM_HARMONIES 4
-#define HARMONY_KNOB_Y 110
+#define HARMONY_KNOB_Y 130
 #define HARMONY_IN_Y HARMONY_KNOB_Y + 50
 #define HARMONY_OUT_Y HARMONY_IN_Y + 50
 #define HARMONY_OUT_CV_Y HARMONY_OUT_Y + 50
