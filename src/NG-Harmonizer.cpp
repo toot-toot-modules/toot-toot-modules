@@ -17,6 +17,10 @@
 #define TOTAL_CV_X TOTAL_X + 46
 #define TOTAL_CV_Y TOTAL_Y
 
+#define OUT_FONT_SIZE 10.5f
+#define IN_FONT_SIZE 12.0f
+
+
 struct NGHarmonizer : Module {
 	enum ParamIds {
 		HARMONY_PARAM,
@@ -152,11 +156,11 @@ void NGHarmonizer::step() {
 		float sine = sinf(2.0f * M_PI * phases[i]);
 		total_out += (5.0f / (NUM_HARMONIES + 1) ) * sine;
 		outputs[HARMONY_OUTPUT + i].value = 5.0f * sine;
-		outputs[HARMONY_OUTPUT_CV + i].value = (5.0f * sine) - 5.0f;
+		outputs[HARMONY_OUTPUT_CV + i].value = (5.0f * sine) + 5.0f;
 	}
 
 	outputs[TOTAL_OUTPUT].value = total_out + (in_v / (NUM_HARMONIES + 1));
-	outputs[TOTAL_OUTPUT_CV].value = total_out - 5.0f;
+	outputs[TOTAL_OUTPUT_CV].value = total_out + 5.0f;
 	outputs[THRU_OUTPUT].value = in_v;
 }
 
@@ -179,21 +183,24 @@ struct NGHarmonizerWidget : ModuleWidget {
 		cvLabel->color = nvgRGB(0, 0, 0);
 		cvLabel->box.pos = Vec(box.size.x / 2 - 26, HARMONY_IN_Y - 20);
 		cvLabel->text = "CV / IN";
+		cvLabel->fontSize = IN_FONT_SIZE;
 		addChild(cvLabel);
 
 		Label* outputLabel = new Label;
-		outputLabel->color = nvgRGB(0, 0, 0);
-		outputLabel->box.pos = Vec(box.size.x / 2 - 21, HARMONY_OUT_Y - 20);
+		outputLabel->color = nvgRGB(255, 255, 255);
+		outputLabel->box.pos = Vec(box.size.x / 2 - 16, HARMONY_OUT_Y - 18);
 		outputLabel->text = "OUT";
+		outputLabel->fontSize = OUT_FONT_SIZE;
 		addChild(outputLabel);
 
 		Label* outputCVLabel = new Label;
-		outputCVLabel->color = nvgRGB(0, 0, 0);
-		outputCVLabel->box.pos = Vec(box.size.x / 2 - 34, HARMONY_OUT_CV_Y - 20);
+		outputCVLabel->color = nvgRGB(255, 255, 255);
+		outputCVLabel->box.pos = Vec(box.size.x / 2 - 26, HARMONY_OUT_CV_Y - 18);
 		outputCVLabel->text = "CV / OUT";
+		outputCVLabel->fontSize = OUT_FONT_SIZE;
 		addChild(outputCVLabel);
 
-		for (int i = 0, j = 8; i < NUM_HARMONIES; i++, j += 35) {
+		for (int i = 0, j = 10; i < NUM_HARMONIES; i++, j += 35) {
 			Label* harmonyNumber = new Label;
 			harmonyNumber->color = nvgRGB(0, 0, 0);
 			harmonyNumber->box.pos = Vec(j + 2.5, HARMONY_KNOB_Y - 20);
@@ -212,31 +219,35 @@ struct NGHarmonizerWidget : ModuleWidget {
 		waveLabel->color = nvgRGB(0, 0, 0);
 		waveLabel->box.pos = Vec(WAVE_IN_X + 20, WAVE_IN_Y + 2);
 		waveLabel->text = "V/OCT";
+		waveLabel->fontSize = IN_FONT_SIZE;
 		addChild(waveLabel);
 
 		addOutput(Port::create<PJ301MPort>(Vec(THRU_X, THRU_Y), Port::OUTPUT, module, NGHarmonizer::THRU_OUTPUT));
 
 		Label* thruLabel = new Label;
-		thruLabel->color = nvgRGB(0, 0, 0);
-		thruLabel->box.pos = Vec(THRU_X - 11, THRU_Y + 25);
+		thruLabel->color = nvgRGB(255, 255, 255);
+		thruLabel->box.pos = Vec(THRU_X - 9, THRU_Y + 25);
 		thruLabel->text = "THRU";
+		thruLabel->fontSize = OUT_FONT_SIZE;
 		addChild(thruLabel);
 
 
 		addOutput(Port::create<PJ301MPort>(Vec(TOTAL_X, TOTAL_Y), Port::OUTPUT, module, NGHarmonizer::TOTAL_OUTPUT));
 
 		Label* totalLabel = new Label;
-		totalLabel->color = nvgRGB(0, 0, 0);
-		totalLabel->box.pos = Vec(TOTAL_X - 8, TOTAL_Y + 25);
+		totalLabel->color = nvgRGB(255, 255, 255);
+		totalLabel->box.pos = Vec(TOTAL_X - 5, TOTAL_Y + 25);
 		totalLabel->text = "TOT";
+		totalLabel->fontSize = OUT_FONT_SIZE;
 		addChild(totalLabel);
 
 		addOutput(Port::create<PJ301MPort>(Vec(TOTAL_CV_X, TOTAL_CV_Y), Port::OUTPUT, module, NGHarmonizer::TOTAL_OUTPUT_CV));
 
 		Label* totalCVLabel = new Label;
-		totalCVLabel->color = nvgRGB(0, 0, 0);
-		totalCVLabel->box.pos = Vec(TOTAL_CV_X - 16, TOTAL_CV_Y + 25);
+		totalCVLabel->color = nvgRGB(255, 255, 255);
+		totalCVLabel->box.pos = Vec(TOTAL_CV_X - 13, TOTAL_CV_Y + 25);
 		totalCVLabel->text = "TOT/CV";
+		totalCVLabel->fontSize = OUT_FONT_SIZE;
 		addChild(totalCVLabel);
 		//addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, NGHarmonizer::BLINK_LIGHT));
 	}
