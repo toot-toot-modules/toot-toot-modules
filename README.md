@@ -1,18 +1,32 @@
+# Toot-Toot Modules - A Collection of VCVRack Modules for CS410P - Sound and Music
+
+A collection of VCVRack modules for use in [VCV Rack](https://vcvrack.com/), a modular synthesizer emulator for Linux, MacOS, and Windows.
+
+# Modules In This Pack
+
+## NG Harmonizer
+Author: Nicholas Gilbert <gnick@pdx.edu>
+
+Takes in a wave input, calculates the frequency, and provides outputs for sine waves at ratio frequencies that map to half, whole, etc steps above and below the input frequency.
+
+Provides outputs as:
+- Standard Sound Outputs, +-5V
+- Control Voltage Outputs 0-10V
+- Through output (original wave)
+- Total, Cumulative Sound Output, scaled to +-5V
+- Total, Cumulative Control Voltage Output, scaled to 0-10V
+
+
+# Getting Started
+
+TODO, this section
+
 # Module ideas
 
 Please see the wiki page for current [module ideas](https://github.com/toot-toot-modules/toot-toot-modules/wiki/Module-Ideas).
 Authors have already chosen module ideas to begin working on
 and additional ideas are stored here.
 
-# VCV Template plugin
+# Licensing
 
-The VCV Template plugin is a starting point for developing your own plugins for VCV Rack.
-It implements a simple sine VCO, demonstrating inputs, outputs, parameters, and other concepts.
-
-See https://vcvrack.com/manual/PluginDevelopmentTutorial.html for a development tutorial.
-
-## Contributing
-
-I welcome Issues and Pull Requests to this repository if you have suggestions for improvement.
-
-This template is released into the public domain ([CC0](https://creativecommons.org/publicdomain/zero/1.0/)).
+See LICENSE.txt and AUTHORS.txt for licensing and authorship information.
