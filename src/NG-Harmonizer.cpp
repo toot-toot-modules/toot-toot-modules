@@ -8,13 +8,13 @@
 #define HARMONY_IN_Y HARMONY_KNOB_Y + 50
 #define HARMONY_OUT_Y HARMONY_IN_Y + 50
 #define HARMONY_OUT_CV_Y HARMONY_OUT_Y + 50
-#define WAVE_IN_X 65
+#define WAVE_IN_X 62
 #define WAVE_IN_Y 58
-#define THRU_X 17
-#define THRU_Y HARMONY_OUT_CV_Y + 50
-#define TOTAL_X THRU_X + 46
-#define TOTAL_Y THRU_Y
-#define TOTAL_CV_X TOTAL_X + 46
+#define TOTAL_X 62
+#define TOTAL_Y HARMONY_OUT_CV_Y + 50
+#define THRU_X TOTAL_X - 47
+#define THRU_Y TOTAL_Y
+#define TOTAL_CV_X TOTAL_X + 47
 #define TOTAL_CV_Y TOTAL_Y
 
 #define OUT_FONT_SIZE 10.5f
@@ -188,7 +188,7 @@ struct NGHarmonizerWidget : ModuleWidget {
 
 		Label* outputLabel = new Label;
 		outputLabel->color = nvgRGB(255, 255, 255);
-		outputLabel->box.pos = Vec(box.size.x / 2 - 16, HARMONY_OUT_Y - 18);
+		outputLabel->box.pos = Vec(box.size.x / 2 - 18, HARMONY_OUT_Y - 18);
 		outputLabel->text = "OUT";
 		outputLabel->fontSize = OUT_FONT_SIZE;
 		addChild(outputLabel);
@@ -200,7 +200,7 @@ struct NGHarmonizerWidget : ModuleWidget {
 		outputCVLabel->fontSize = OUT_FONT_SIZE;
 		addChild(outputCVLabel);
 
-		for (int i = 0, j = 10; i < NUM_HARMONIES; i++, j += 35) {
+		for (int i = 0, j = 8; i < NUM_HARMONIES; i++, j += 35) {
 			Label* harmonyNumber = new Label;
 			harmonyNumber->color = nvgRGB(0, 0, 0);
 			harmonyNumber->box.pos = Vec(j + 2.5, HARMONY_KNOB_Y - 20);
