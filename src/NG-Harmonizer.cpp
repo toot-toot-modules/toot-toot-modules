@@ -118,7 +118,6 @@ void NGHarmonizer::step() {
 	float deltat = engineGetSampleTime();
 	float in_v = inputs[WAVE_INPUT].value;
 	float total_out = 0.0f;
-	float total_out_cv = 0.0f;
 	int harmony_params[NUM_HARMONIES];
 
 	for (int i = 0; i < NUM_HARMONIES; ++i) {
