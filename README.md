@@ -19,7 +19,11 @@ Provides outputs as:
 
 # Getting Started
 
-TODO, this section
+1. Build VCVRack from source, following the guide from here: https://vcvrack.com/manual/Building.html#building-rack or download the [Rack-SDK](https://github.com/VCVRack/Rack/issues/258#issuecomment-405119759), and a zipped build of [Rack](https://vcvrack.com/).
+
+2. Follow the instructions for [Building Rack Plugins](https://vcvrack.com/manual/Building.html#building-rack-plugins), replacing the git repository with this repo: https://vcvrack.com/manual/Building.html#building-rack-plugins
+
+Once completed, upon loading Rack, you should see the available plugins from this pack by searching for them using the Rack interface.
 
 # Module ideas
 
