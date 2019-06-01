@@ -37,11 +37,13 @@ struct Rpeggi8r : Module {
 	int currentTone;
 	int previousTone;
 	int previousTripleTone;
+	int direction;
 
 	Rpeggi8r();
 	void step() override;
 
 	void linearArpeggiate();
+	void linearBidirectionalArpeggiate();
 	void linearTriplesArpeggiate();
 	void randomArpeggiate();
 	void randomNoRepeatArpeggiate();
@@ -56,6 +58,7 @@ Rpeggi8r::Rpeggi8r()
 	currentTone = A_PARAM;
 	previousTone = NUM_PARAMS-1;
 	previousTripleTone = previousTone - 1;
+	direction = +1;
 }
 
 void Rpeggi8r::step() {
@@ -69,7 +72,7 @@ void Rpeggi8r::step() {
 	arpPhase += freq * deltaTime;
 	if (arpPhase >= 1.0f) {
 		arpPhase -= 1.0f;
-		linearTriplesArpeggiate();
+		linearBidirectionalArpeggiate();
 	}
 
 	// Get the output frequency for the current tone
@@ -95,6 +98,34 @@ void Rpeggi8r::linearArpeggiate() {
 	// Reset back to first tone after moving past the last tone
 	if (currentTone == NUM_PARAMS)
 		currentTone = A_PARAM;
+}
+
+void Rpeggi8r::linearBidirectionalArpeggiate() {
+	// Determine next tone in order
+	previousTone = currentTone;
+	if (direction > 0) {
+		if (currentTone < NUM_PARAMS-1) {
+			// Linearly increase
+			currentTone += direction;
+		}
+		else {
+			// Flip direction and linearly decrease
+			direction = -direction;
+			currentTone += direction;
+		}
+	}
+	else if (direction < 0){
+		if (currentTone > A_PARAM) {
+			// Linearly decrease
+			currentTone += direction;
+		}
+		else {
+			// Flip direction and linearly increase
+			direction = -direction;
+			currentTone += direction;
+		}
+	}
+
 }
 
 void Rpeggi8r::linearTriplesArpeggiate() {
