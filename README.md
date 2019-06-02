@@ -7,7 +7,8 @@ A collection of VCVRack modules for use in [VCV Rack](https://vcvrack.com/), a m
 ## NG Harmonizer
 Author: Nicholas Gilbert <gnick@pdx.edu>
 
-Takes in a wave input, calculates the frequency, and provides outputs for sine waves at ratio frequencies that map to half, whole, etc steps above and below the input frequency.
+Takes in a wave input, calculates the frequency, and provides outputs for sine waves at ratio frequencies that map to half, whole, etc steps above and below the input frequency.    
+The four harmonies can be modified by either a control voltage input or directly through the four knobs.
 
 Provides outputs as:
 - Standard Sound Outputs, +-5V
@@ -16,6 +17,10 @@ Provides outputs as:
 - Total, Cumulative Sound Output, scaled to +-5V
 - Total, Cumulative Control Voltage Output, scaled to 0-10V
 
+### Testing
+
+See `test-patches` for a series of VCVRack patches that can be loaded to showcase various features of the harmonizer modular.    
+The harmonizer patches are labeled `harmonizer_test_#.vcv`
 
 # Getting Started
 
