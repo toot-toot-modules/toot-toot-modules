@@ -1,3 +1,8 @@
+/* NG Harmonizer
+ * Author: Nicholas Gilbert
+ * See LICENSE.txt for licensing information
+ */
+
 #include "toot-toot-modules.hpp"
 #include "dsp/digital.hpp"
 #include "dsp/ringbuffer.hpp"
