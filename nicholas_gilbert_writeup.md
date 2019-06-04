@@ -1,0 +1,33 @@
+# Nicholas Gilbert - CS410 Project Write-up
+
+## What Was Built?
+
+I made a single module for this module pack, making this group project more of a collection of individual projects, as each of us only wrote individual modules. The only code that crosses is the core module .cpp and .hpp to initialize the modules; all other code is individual. So, let's talk a bit about the module that I created.
+
+This module is dubbed 'NG Harmonizer', which sort of does what is described. In a high level overview, it takes in a voltage wave, calculates the frequency, then outputs sine waves above and below that frequency by some specified value. I added a table of frequency ratios that map to half steps above and below, full steps above and below, etc all the way up to just under octaves above and below. The knobs on the module determine how far above or below to produce. What this allows for is some cool, added sounds to occur that can be used in interesting ways within Rack.
+
+By the nature of how VCV Rack works, the ratio above and below can be controlled using Control Voltages. In Rack, Control Voltages are between 0 volts and 10 volts. I made the input, flooring it to a value and stretching it to fit the table of ratios. On any given step, a wave will generate for that given frequency. I added a number of useful outputs that can be used in a variety of Rack situations. I have individual sound outputs (between -5 volts and 5 volts, the general sound output amplitudes for Rack), individual control voltage outputs for each harmony (between 0 and 10 volts), as well as a 'THRU' output for the original unaltered wave, as well a cumulative output (takes the input wave, adds each harmony, and scales them to -5 to 5 volts), and the same sort of cumulative output scaled to control voltage.
+
+All of this work was done within the existing Rack plugin API for interacting with the software. VCV Rack themselves provides a template for starting a plugin, which can be found in `src/MyModule.cpp`. Jumping from there made development straightforward.
+
+## How It Worked Out / Successes
+
+This module worked out exceedingly well, in my opinion. Initially jumping into this project, I expected to have to grapple with the API just to get it to do anything. As I started working, however, it became clear just how intuitive the work was. The API provided C++ classes for defining inputs, outputs, and parameters, as well as showing the form for accessing using a clever enumeration setup for each, which allowed for nice modularity. I didn't make too much use of it, but I was able to design it in such a way that I could easily extend and add more outputs; however the graphical design aspect would have to be tweaked significantly in order to make it look good (at to a certain extent to function, since it would need to widen a good amount for every column of harmonies added).
+
+I decided to have the variables for widget locations (ports, knobs, labels, etc)parameterized in a series of `#define`s to make it easy to tweak ("easy", I'll touch on that bit in the `What Doesn't Work` section since it became a major hardpoint). The API was designed for modularity in mind, and I think I used that to its full potential. Adding new features in the future should be relatively simple and straightforward, with the largest time commitment being design alterations, not code alterations.
+
+## What Doesn't Work / Challenges
+
+The biggest challenge for this project was the actual aesthetic design for the module, and the positions of the ports and knobs. It's easy enough to physically add a port, but positioning it in a sane way with respect to the underlying `svg` file for the look is an absolute *nightmare*. I had to use Inkscape to generate the svg for the base image of the module. Inkscape itself is super finnicky and difficult to work with at first, even for simple tasks. However, the real challenge comes from the mismatch of units and scale for the `x y` coordinate plane. The C++ generated elements are positioned using a vector of unknown units from the top right of the coordinate grid: inkscape uses (pixels? inches or metric?) from the bottom right. Basically: in order to get things to center you have to *incrementally* guess and check for the right position. The final version of my model is *close enough*, since "centered" according to Inkscape's editor wasn't actually centered in the rendering process. This made all the design really overly difficult, much more difficult than the actual programming of the module itself.
+
+Basically, the designing was difficult, but the actual coding was not super difficult. I did have to do some initial rethinking of design, when I couldn't easily recreate the input wave. I had to decide to generate sine waves instead, since all of my methods for trying to ring buffer the input wave led to either lag issues or not accurate reproductions (very blocky). In addition, due to the time it took for aesthetics, some planned features weren't implemented. Some of those include:
+- Toggle switches for individual harmonies, a mute if you will. I wanted to allow this to not add to the cumulative outputs.
+- Octave knobs. The harmony ratios only go up to be not including the next octave. I would love to add a modifier that allows to select a multiplier above and below.
+- In-application harmony number adjustment. I have seen modules people have created that allow for resizing of modules by dragging the edges of the module, and the way I setup the harmony port creation should allow for that, but I didn't have time to pursue that.
+After this class is over, I do expect to continue to work and try to add at least the first two features. The biggest hurdle was redesigning the interface, once setup the code would not be particularly difficult since the internal logic would be simple, but redesigning for the limited space would add a larger time commitment.
+
+## Lessons Learned
+
+The biggest thing I think I learned was the power and ease a well-designed C++ class scheme can really accomplish when generating new content, providing a nice API for development. The VCV Rack team definitely did that right with their design decisions, and their documentation was superb. Being able to jump into an ecosystem and work with it well was a fantastic thing to learn, and taught me that modern C++ isn't actually that bad. Most of the sticking points were accounted for.
+
+Another lesson learned was trying to grapple with visual and graphic design. I'm no designer, but I used the tools I had available to be able to make something that looks reasonably good, especially in the context of a full VCV Rack with tons of other modules within it.
