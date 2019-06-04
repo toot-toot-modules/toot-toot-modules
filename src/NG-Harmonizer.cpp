@@ -253,7 +253,6 @@ struct NGHarmonizerWidget : ModuleWidget {
 		totalCVLabel->text = "TOT/CV";
 		totalCVLabel->fontSize = OUT_FONT_SIZE;
 		addChild(totalCVLabel);
-		//addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, NGHarmonizer::BLINK_LIGHT));
 	}
 };
 
