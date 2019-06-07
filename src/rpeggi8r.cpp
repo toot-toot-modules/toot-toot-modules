@@ -9,6 +9,8 @@ struct Rpeggi8r : Module {
 		B_PARAM,
 		C_PARAM,
 		D_PARAM,
+		E_PARAM,
+		F_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
@@ -175,14 +177,16 @@ struct Rpeggi8rWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		addParam(ParamWidget::create<RoundLargeBlackKnob>(Vec(30, 60), module, Rpeggi8r::FREQ_PARAM, 1.0f, 16.0f, 4.0f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 115), module, Rpeggi8r::A_PARAM, 432.0f, 864.0f, 432.0f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 115), module, Rpeggi8r::B_PARAM, 432.0f, 864.0f, 544.29f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 150), module, Rpeggi8r::C_PARAM, 432.0f, 864.0f, 647.27f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 150), module, Rpeggi8r::D_PARAM, 432.0f, 864.0f, 864.0f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 115), module, Rpeggi8r::A_PARAM, 432.0f, 1728.0f, 432.0f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 115), module, Rpeggi8r::B_PARAM, 432.0f, 1728.0f, 544.29f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 150), module, Rpeggi8r::C_PARAM, 432.0f, 1728.0f, 647.27f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 150), module, Rpeggi8r::D_PARAM, 432.0f, 1728.0f, 864.0f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 150), module, Rpeggi8r::E_PARAM, 432.0f, 1728.0f, 1088.57f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 150), module, Rpeggi8r::F_PARAM, 432.0f, 1728.0f, 1294.54f));
 
 		addOutput(Port::create<PJ301MPort>(Vec(50, 300), Port::OUTPUT, module, Rpeggi8r::ARP_OUTPUT));
 	}
 };
 
 
-Model *modelRpeggi8r = Model::create<Rpeggi8r, Rpeggi8rWidget>("toot-toot-modules", "Rpeggi8r", "Quad input arpeggiator", OSCILLATOR_TAG);
+Model *modelRpeggi8r = Model::create<Rpeggi8r, Rpeggi8rWidget>("toot-toot-modules", "Rpeggi8r", "Hex input arpeggiator", OSCILLATOR_TAG);
