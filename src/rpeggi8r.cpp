@@ -14,11 +14,6 @@ struct Rpeggi8r : Module {
 		NUM_PARAMS
 	};
 	enum InputIds {
-		//FREQ_INPUT,
-		//A_INPUT,
-		//B_INPUT,
-		//C_INPUT,
-		//D_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
@@ -26,7 +21,6 @@ struct Rpeggi8r : Module {
 		NUM_OUTPUTS
 	};
 	enum LightIds {
-		//BLINK_LIGHT,
 		NUM_LIGHTS
 	};
 
