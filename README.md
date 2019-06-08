@@ -22,6 +22,15 @@ Provides outputs as:
 See `test-patches` for a series of VCVRack patches that can be loaded to showcase various features of the harmonizer modular.    
 The harmonizer patches are labeled `harmonizer_test_#.vcv`
 
+## AB Clock
+Author: Adam Barber <embarber@pdx.edu>
+
+A very slow oscillator, useful as a clock or a simple drum machine. Knob adjusts from 0 to 240bpm.
+
+Outputs:
+- Saw (inverse), +-5V
+- Square, +-5V
+
 # Getting Started
 
 1. Build VCVRack from source, following the guide from here: https://vcvrack.com/manual/Building.html#building-rack or download the [Rack-SDK](https://github.com/VCVRack/Rack/issues/258#issuecomment-405119759), and a zipped build of [Rack](https://vcvrack.com/).
