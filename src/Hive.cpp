@@ -142,7 +142,7 @@ void Hive::step() {
     queen.step_update(deltaTime, params[QPITCH_PARAM].value, inputs[PITCH_INPUT].value,
                     params[QFM_PARAM].value, 0.0f, params[QPWM_PARAM].value);
     queen.step_update(deltaTime, params[QPITCH_PARAM].value, inputs[PITCH_INPUT].value,
-                    params[QFM_PARAM].value, (queen.saw_tri_sin(params[QSELF_PARAM].value * 5.0f)), params[QPWM_PARAM].value);
+                    params[QFM_PARAM].value, (queen.saw_tri_sin(params[QSELF_PARAM].value) * 5.0f), params[QPWM_PARAM].value);
     float fm = queen.all_wave(params[QWAVE_PARAM].value) * 5.0f;
     drone.step_update(deltaTime, params[DPITCH_PARAM].value, inputs[PITCH_INPUT].value,
                     params[DFM_PARAM].value, fm, params[DPWM_PARAM].value);
@@ -179,7 +179,7 @@ struct HiveWidget : ModuleWidget {
         addParam(ParamWidget::create<Rogan1PSBlue>(Vec(275, 380-267), module, Hive::QPWM_PARAM, 0.0, 1.0, 0.5));
         addParam(ParamWidget::create<Rogan1PSBlue>(Vec(100, 380-140), module, Hive::DPWM_PARAM, 0.0, 1.0, 0.5));
 
-        addParam(ParamWidget::create<Rogan1PSWhite>(Vec(323, 380-340), module, Hive::QSELF_PARAM, 0.0, 1.0, 0.0));
+        addParam(ParamWidget::create<Rogan1PSWhite>(Vec(323, 380-340), module, Hive::QSELF_PARAM, 0.0, 2.0, 0.0));
 
 
         addInput(Port::create<PJ301MPort>(Vec(50, 120), Port::INPUT, module, Hive::PITCH_INPUT));
