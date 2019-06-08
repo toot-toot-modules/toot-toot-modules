@@ -31,6 +31,14 @@ Outputs:
 - Saw (inverse), +-5V
 - Square, +-5V
 
+## Mark Mod
+Author: Mark Williams
+
+Generates a square wave with input frequency that triggers the wave. Frequency is also adjusted with the dial.
+
+Outputs:
+- Square,+- 5V
+
 # Getting Started
 
 1. Build VCVRack from source, following the guide from here: https://vcvrack.com/manual/Building.html#building-rack or download the [Rack-SDK](https://github.com/VCVRack/Rack/issues/258#issuecomment-405119759), and a zipped build of [Rack](https://vcvrack.com/).
