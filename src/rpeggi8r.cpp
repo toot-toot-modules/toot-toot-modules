@@ -5,6 +5,7 @@
 struct Rpeggi8r : Module {
 	enum ParamIds {
 		FREQ_PARAM,
+		ARP_PARAM,
 		A_PARAM,
 		B_PARAM,
 		C_PARAM,
@@ -38,6 +39,7 @@ struct Rpeggi8r : Module {
 	Rpeggi8r();
 	void step() override;
 
+	void arpeggiate();
 	void linearArpeggiate();
 	void linearBidirectionalArpeggiate();
 	void linearTriplesArpeggiate();
@@ -61,14 +63,14 @@ void Rpeggi8r::step() {
 	// Get the sample time for time related calculations
 	float deltaTime = engineGetSampleTime();
 
-	// Get the appregiation frequency
+	// Get the arpeggiation frequency
 	float freq = params[FREQ_PARAM].value;
 
-	// Appegiate when enough time has passed
+	// Arpeggiate when enough time has passed
 	arpPhase += freq * deltaTime;
 	if (arpPhase >= 1.0f) {
 		arpPhase -= 1.0f;
-		linearBidirectionalArpeggiate();
+		arpeggiate();
 	}
 
 	// Get the output frequency for the current tone
@@ -84,6 +86,29 @@ void Rpeggi8r::step() {
 
 	// Send tone to arpeggiation output
 	outputs[ARP_OUTPUT].value = 5.0f * sine;
+}
+
+void Rpeggi8r::arpeggiate() {
+	int method = params[ARP_PARAM].value;
+	switch (method) {
+		case 1:
+			linearArpeggiate();
+			break;
+		case 2:
+			linearBidirectionalArpeggiate();
+			break;
+		case 3:
+			linearTriplesArpeggiate();
+			break;
+		case 4:
+			randomArpeggiate();
+			break;
+		case 5:
+			randomNoRepeatArpeggiate();
+			break;
+		default:
+			linearTriplesArpeggiate();
+	}
 }
 
 void Rpeggi8r::linearArpeggiate() {
@@ -170,15 +195,16 @@ struct Rpeggi8rWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(ParamWidget::create<RoundLargeBlackKnob>(Vec(30, 60), module, Rpeggi8r::FREQ_PARAM, 1.0f, 16.0f, 4.0f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 115), module, Rpeggi8r::A_PARAM, 432.0f, 1728.0f, 432.0f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 115), module, Rpeggi8r::B_PARAM, 432.0f, 1728.0f, 544.29f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 150), module, Rpeggi8r::C_PARAM, 432.0f, 1728.0f, 647.27f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 150), module, Rpeggi8r::D_PARAM, 432.0f, 1728.0f, 864.0f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 150), module, Rpeggi8r::E_PARAM, 432.0f, 1728.0f, 1088.57f));
-		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 150), module, Rpeggi8r::F_PARAM, 432.0f, 1728.0f, 1294.54f));
+		addParam(ParamWidget::create<RoundLargeBlackKnob>(Vec(15, 65), module, Rpeggi8r::FREQ_PARAM, 1.0f, 16.0f, 6.0f));
+		addParam(ParamWidget::create<RoundSmallBlackKnob>(Vec(55, 78), module, Rpeggi8r::ARP_PARAM, 1.0f, 5.99f, 3.5f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 145), module, Rpeggi8r::A_PARAM, 432.0f, 1728.0f, 432.0f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 145), module, Rpeggi8r::B_PARAM, 432.0f, 1728.0f, 544.29f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 180), module, Rpeggi8r::C_PARAM, 432.0f, 1728.0f, 647.27f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 180), module, Rpeggi8r::D_PARAM, 432.0f, 1728.0f, 864.0f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(15, 215), module, Rpeggi8r::E_PARAM, 432.0f, 1728.0f, 1088.57f));
+		addParam(ParamWidget::create<RoundBlackKnob>(Vec(50, 215), module, Rpeggi8r::F_PARAM, 432.0f, 1728.0f, 1294.54f));
 
-		addOutput(Port::create<PJ301MPort>(Vec(50, 300), Port::OUTPUT, module, Rpeggi8r::ARP_OUTPUT));
+		addOutput(Port::create<PJ301MPort>(Vec(32, 275), Port::OUTPUT, module, Rpeggi8r::ARP_OUTPUT));
 	}
 };
 
