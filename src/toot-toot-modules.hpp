@@ -10,3 +10,4 @@ extern Plugin *plugin;
 extern Model *modelMyModule;
 extern Model *modelNGHarmonizer;
 extern Model *modelABClock;
+extern Model *modelMarkMod;
