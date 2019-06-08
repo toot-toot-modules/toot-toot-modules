@@ -179,7 +179,7 @@ struct HiveWidget : ModuleWidget {
         addParam(ParamWidget::create<Rogan1PSBlue>(Vec(275, 380-267), module, Hive::QPWM_PARAM, 0.0, 1.0, 0.5));
         addParam(ParamWidget::create<Rogan1PSBlue>(Vec(100, 380-140), module, Hive::DPWM_PARAM, 0.0, 1.0, 0.5));
 
-        addParam(ParamWidget::create<Rogan1PSWhite>(Vec(323, 380-340), module, Hive::QSELF_PARAM, 0.0, 1.0, 0.0));
+        addParam(ParamWidget::create<Rogan1PSWhite>(Vec(323, 380-340), module, Hive::QSELF_PARAM, 0.0, 2.0, 0.0));
 
 
         addInput(Port::create<PJ301MPort>(Vec(50, 120), Port::INPUT, module, Hive::PITCH_INPUT));
