@@ -142,7 +142,7 @@ void Hive::step() {
     queen.step_update(deltaTime, params[QPITCH_PARAM].value, inputs[PITCH_INPUT].value,
                     params[QFM_PARAM].value, 0.0f, params[QPWM_PARAM].value);
     queen.step_update(deltaTime, params[QPITCH_PARAM].value, inputs[PITCH_INPUT].value,
-                    params[QFM_PARAM].value, (queen.saw_tri_sin(params[QSELF_PARAM].value * 5.0f)), params[QPWM_PARAM].value);
+                    params[QFM_PARAM].value, (queen.saw_tri_sin(params[QSELF_PARAM].value) * 5.0f), params[QPWM_PARAM].value);
     float fm = queen.all_wave(params[QWAVE_PARAM].value) * 5.0f;
     drone.step_update(deltaTime, params[DPITCH_PARAM].value, inputs[PITCH_INPUT].value,
                     params[DFM_PARAM].value, fm, params[DPWM_PARAM].value);
