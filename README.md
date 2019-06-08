@@ -39,6 +39,14 @@ Generates a square wave with input frequency that triggers the wave. Frequency i
 Outputs:
 - Square,+- 5V
 
+## Rpeggi8r
+Author: Cadence Michael
+
+Generates various arpeggiation patterns. Use dials to control the speed, pattern, and pitch for the tones being arpeggiated between.
+
+Outputs:
+- Six-tone arpeggiation pattern, +-5V
+
 # Getting Started
 
 1. Build VCVRack from source, following the guide from here: https://vcvrack.com/manual/Building.html#building-rack or download the [Rack-SDK](https://github.com/VCVRack/Rack/issues/258#issuecomment-405119759), and a zipped build of [Rack](https://vcvrack.com/).
